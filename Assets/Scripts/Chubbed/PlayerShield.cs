@@ -13,7 +13,7 @@ public class PlayerShield : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetButton("Shield") && !Input.GetButton("Horizontal"))
+        if (Input.GetButton("Shield"))
         {
             shield.gameObject.SetActive(true);
         }

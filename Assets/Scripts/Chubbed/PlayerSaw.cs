@@ -26,13 +26,13 @@ public class PlayerSaw : MonoBehaviour
     private void Update()
     {
         FlipSaw();
-        if ((Input.GetButton("Vertical") && Input.GetButtonUp("Fire1")) && _verticalSawInstance == null)
+        if ((Input.GetButton("Vertical") && Input.GetButtonUp("Fire1")) && _sawInstance == null && _verticalSawInstance == null)
         {
             CreateVerticalSaw();
             return;
         }
         
-        if (Input.GetButtonUp("Fire1") && _sawInstance == null)
+        if (Input.GetButtonUp("Fire1") && _sawInstance == null && _verticalSawInstance == null)
         {
             CreateSaw();
         }
