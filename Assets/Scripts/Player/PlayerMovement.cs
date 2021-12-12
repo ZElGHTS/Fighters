@@ -5,14 +5,14 @@ using UnityEngine.Serialization;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private float walkingSpeed = 7f;
-    [SerializeField] private float jumpHeight = 14f;
-    [SerializeField] private LayerMask jumpAvailable;
+    [SerializeField] protected float walkingSpeed = 7f;
+    [SerializeField] protected float jumpHeight = 14f;
+    [SerializeField] protected LayerMask jumpAvailable;
+    [SerializeField] protected GameObject jumpCheck;
 
-    private Rigidbody2D _playerRb;
-    private BoxCollider2D _collider2D;
+    protected Rigidbody2D PlayerRb;
+    protected float SideMovements;
     private Animator _animator;
-    private float _sideMovements;
     private bool _doubleJump;
     private static readonly int State = Animator.StringToHash("movementState");
 
@@ -25,10 +25,10 @@ public class PlayerMovement : MonoBehaviour
         DoubleJump
     }
 
-    private void Start()
+
+    protected void Start()
     {
-        _playerRb = GetComponent<Rigidbody2D>();
-        _collider2D = GetComponent<BoxCollider2D>();
+        PlayerRb = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
     }
 
@@ -37,25 +37,22 @@ public class PlayerMovement : MonoBehaviour
         GetPlayerDirection();
         Jump();
         UpdateAnimationState();
-        ExitGame();
     }
 
-    private void GetPlayerDirection()
+    protected virtual void GetPlayerDirection()
     {
-        _sideMovements = Input.GetAxisRaw("Horizontal");
-        _playerRb.velocity = new Vector2(_sideMovements * walkingSpeed, _playerRb.velocity.y);
     }
 
     private void Jump()
     {
         if (Input.GetButtonDown("Jump") && IsGrounded())
         {
-            _playerRb.velocity = new Vector2(0, jumpHeight);
+            PlayerRb.velocity = new Vector2(0, jumpHeight);
             _doubleJump = true;
         }
         else if (Input.GetButtonDown("Jump") && _doubleJump)
         {
-            _playerRb.velocity = new Vector2(0, jumpHeight);
+            PlayerRb.velocity = new Vector2(0, jumpHeight);
             _doubleJump = false;
         }
     }
@@ -64,12 +61,12 @@ public class PlayerMovement : MonoBehaviour
     {
         MovementState movementState;
         
-        if (_sideMovements > 0f)
+        if (SideMovements > 0f)
         {
             movementState = MovementState.Running;
             InverseScale(1);
         }
-        else if (_sideMovements < 0f)
+        else if (SideMovements < 0f)
         {
             movementState = MovementState.Running;
             InverseScale(-1);
@@ -79,7 +76,7 @@ public class PlayerMovement : MonoBehaviour
             movementState = MovementState.Idle;
         }
 
-        if (_playerRb.velocity.y > 0.1f)
+        if (PlayerRb.velocity.y > 0.1f)
         {
             movementState = MovementState.Jumping;
             if (!_doubleJump)
@@ -87,7 +84,7 @@ public class PlayerMovement : MonoBehaviour
                 movementState = MovementState.DoubleJump;
             }
         }
-        else if (_playerRb.velocity.y < -0.1f)
+        else if (PlayerRb.velocity.y < -0.1f)
         {
             movementState = MovementState.Falling;
         }
@@ -104,15 +101,6 @@ public class PlayerMovement : MonoBehaviour
 
     private bool IsGrounded()
     {
-        return Physics2D.BoxCast(_collider2D.bounds.center, _collider2D.bounds.size, 0f,
-            Vector2.down, 0.1f, jumpAvailable);
-    }
-
-    private void ExitGame()
-    {
-        if (Input.GetButtonDown("Cancel"))
-        {
-            Application.Quit();
-        }
+        return Physics2D.OverlapCircle(jumpCheck.transform.position, 0.2f, jumpAvailable);
     }
 }

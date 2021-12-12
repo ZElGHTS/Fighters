@@ -11,12 +11,21 @@ public class PlayerFireball : MonoBehaviour
     [SerializeField] private float fireballSpeed = 15f;
     [SerializeField] private float fireballRange = 0.7f;
 
+    private float _nextFireballTime = 0f;
+    private float _fireballCooldown = 2f;
+
     private void Update()
     {
+        if (Input.GetButton("Shield")) return;
+        
         FlipFireball();
-        if (Input.GetButtonUp("Shift"))
+        if (Time.time >= _nextFireballTime)
         {
-            Fire();
+            if (Input.GetButtonUp("Shift"))
+            {
+                Fire();
+                _nextFireballTime = Time.time + 1f / _fireballCooldown;
+            }
         }
     }
 

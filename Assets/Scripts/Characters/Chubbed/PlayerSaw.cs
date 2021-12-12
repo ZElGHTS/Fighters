@@ -25,8 +25,10 @@ public class PlayerSaw : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetButton("Shield")) return;
+        
         FlipSaw();
-        if ((Input.GetButton("Vertical") && Input.GetButtonUp("Fire1")) && _sawInstance == null && _verticalSawInstance == null)
+        if (Input.GetButton("Vertical") && Input.GetButtonUp("Fire1") && _sawInstance == null && _verticalSawInstance == null)
         {
             CreateVerticalSaw();
             return;
@@ -46,7 +48,7 @@ public class PlayerSaw : MonoBehaviour
     private void CreateSaw()
     {
         _sawInstance = Instantiate(sawRigidbody, (Vector2)fireTransform.position, fireTransform.rotation);
-        adjustVelocity();
+        AdjustVelocity();
 
         Destroy(_sawInstance.gameObject, range);
     }
@@ -59,9 +61,9 @@ public class PlayerSaw : MonoBehaviour
         Destroy(_verticalSawInstance.gameObject, verticalRange);
     }
 
-    private void adjustVelocity()
+    private void AdjustVelocity()
     {
-        if (isPlayerGrounded())
+        if (IsPlayerGrounded())
         {
             _sawInstance.velocity = fireTransform.right * movementSpeed;
             InverseVelocity();
@@ -80,7 +82,7 @@ public class PlayerSaw : MonoBehaviour
         }
     }
 
-    private bool isPlayerGrounded()
+    private bool IsPlayerGrounded()
     {
         return Physics2D.BoxCast(_collider2D.bounds.center, _collider2D.bounds.size, 0f,
             Vector2.down, 0.1f, ground);

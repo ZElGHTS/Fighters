@@ -11,7 +11,7 @@ public class CameraRig : MonoBehaviour
     [SerializeField] private float angleUpdateSpeed = 7f;
     [SerializeField] private float positionUpdateSpeed = 5f;
     [SerializeField] private float depthMax = -10f;
-    [SerializeField] private float depthMin = -22f;
+    [SerializeField] private float depthMin = 3; // -22
     [SerializeField] private float angleMax = 11f;
     [SerializeField] private float angleMin = 3f;
 

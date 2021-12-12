@@ -10,9 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4379791479683054343}
   - component: {fileID: 4379791479683054344}
-  - component: {fileID: 4379791479683054345}
   - component: {fileID: 4379791479683054346}
   - component: {fileID: 3407627213768557808}
+  - component: {fileID: 4379791479683054345}
+  - component: {fileID: 5325673341257030201}
   m_Layer: 0
   m_Name: Saw
   m_TagString: trap
@@ -85,19 +86,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &4379791479683054345
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4379791479683054347}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a252abc093ca40cea56633f99c8be34, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rotationalSpeed: 2
 --- !u!60 &4379791479683054346
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -147,7 +135,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 10
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
@@ -156,3 +144,31 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &4379791479683054345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4379791479683054347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a252abc093ca40cea56633f99c8be34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationalSpeed: 2
+--- !u!114 &5325673341257030201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4379791479683054347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3194289678b4b42f9b9e9cd1d6b0151b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  projectileDamage: 3.7
+  destroyOnTouch: 0
+  noKnockback: 0
