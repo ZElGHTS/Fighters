@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class Saw : MonoBehaviour
+public class Saw : MonoBehaviourPun
 {
     [SerializeField] private float rotationalSpeed = 2f;
     

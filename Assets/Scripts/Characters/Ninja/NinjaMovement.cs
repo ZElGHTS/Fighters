@@ -6,9 +6,9 @@ public class NinjaMovement : PlayerMovement
 {
     private PlayerAttack _playerAttack;
 
-    protected new void Start()
+    protected new void Awake()
     {
-        base.Start();
+        base.Awake();
         _playerAttack = GetComponent<PlayerAttack>();
     }
 

@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class PlayerKunai : MonoBehaviour
+public class PlayerKunai : MonoBehaviourPun
 {
     [SerializeField] private Rigidbody2D kunai;
     [SerializeField] private SpriteRenderer kunaiSprite;
@@ -15,31 +16,33 @@ public class PlayerKunai : MonoBehaviour
     private float _nextKunaiTime = 0f;
     private float _kunaiCooldown = 2f;
 
-    private void Update()
+    private void FixedUpdate()
     {
+        if (!photonView.IsMine) return;
         if (Input.GetButton("Shield")) return;
         
-        FlipKunai();
         if (Time.time >= _nextKunaiTime)
         {
             if (Input.GetButtonUp("Shift"))
             {
-                Throw();
+                photonView.RPC("RPC_Throw", RpcTarget.AllViaServer);
                 _nextKunaiTime = Time.time + 1f / _kunaiCooldown;
             }
         }
     }
 
-    private void Throw()
+    [PunRPC]
+    private void RPC_Throw()
     {
         var kunaiInstance = Instantiate(kunai, (Vector2)throwTransform.position, throwTransform.rotation);
         kunaiInstance.velocity = throwTransform.right * kunaiSpeed;
-        InverseVelocity(kunaiInstance);
+        RPC_InverseVelocity(kunaiInstance);
+        RPC_FlipKunai();
 
         Destroy(kunaiInstance.gameObject, kunaiRange);
     }
 
-    private void InverseVelocity(Rigidbody2D instance)
+    private void RPC_InverseVelocity(Rigidbody2D instance)
     {
         if (playerTransform.localScale.x == -1)
         {
@@ -47,7 +50,7 @@ public class PlayerKunai : MonoBehaviour
         }
     }
 
-    private void FlipKunai()
+    private void RPC_FlipKunai()
     {
         kunaiSprite.flipX = playerTransform.localScale.x != -1;
     }

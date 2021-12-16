@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class PlayerLife : MonoBehaviour
+public class PlayerLife : MonoBehaviourPun
 {
     [SerializeField] private GameObject platform;
     [SerializeField] private float startingPercentage = 0f;
@@ -30,15 +31,17 @@ public class PlayerLife : MonoBehaviour
         KnockBack(attacker);
     }
 
-    private void Start()
+    private void Awake()
     {
         _animator = GetComponent<Animator>();
         _playerRb = GetComponent<Rigidbody2D>();
         _currentPercentage = startingPercentage;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
+        if (!photonView.IsMine) return;
+        
         if (IsOutOfBounds())
         {
             Die();

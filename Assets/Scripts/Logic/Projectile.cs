@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class Projectile : MonoBehaviour
+public class Projectile : MonoBehaviourPun
 {
     [SerializeField] private float projectileDamage;
     [SerializeField] private bool destroyOnTouch = true;
@@ -12,8 +13,11 @@ public class Projectile : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            other.gameObject.GetComponent<PlayerLife>().TakeDamage(projectileDamage, gameObject.transform, noKnockback);
-            if (destroyOnTouch) Destroy(gameObject);
+            other.gameObject.GetComponent<PhotonView>().GetComponent<PlayerLife>().TakeDamage(projectileDamage, gameObject.transform, noKnockback);
+            if (destroyOnTouch)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

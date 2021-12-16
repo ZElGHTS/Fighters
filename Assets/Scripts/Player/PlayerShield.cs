@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class PlayerShield : MonoBehaviour
+public class PlayerShield : MonoBehaviourPun
 {
     [SerializeField] private GameObject shield;
     
@@ -11,8 +12,10 @@ public class PlayerShield : MonoBehaviour
         
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
+        if (!photonView.IsMine) return;
+        
         if (Input.GetButton("Shield"))
         {
             shield.gameObject.SetActive(true);

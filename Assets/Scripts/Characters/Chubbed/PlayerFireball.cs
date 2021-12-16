@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class PlayerFireball : MonoBehaviour
+public class PlayerFireball : MonoBehaviourPun
 {
     [SerializeField] private Rigidbody2D fireball;
     [SerializeField] private SpriteRenderer fireballSprite;
@@ -14,31 +15,33 @@ public class PlayerFireball : MonoBehaviour
     private float _nextFireballTime = 0f;
     private float _fireballCooldown = 2f;
 
-    private void Update()
+    private void FixedUpdate()
     {
+        if (!photonView.IsMine) return;
         if (Input.GetButton("Shield")) return;
         
-        FlipFireball();
         if (Time.time >= _nextFireballTime)
         {
             if (Input.GetButtonUp("Shift"))
             {
-                Fire();
+                photonView.RPC("RPC_Fire", RpcTarget.AllViaServer);
                 _nextFireballTime = Time.time + 1f / _fireballCooldown;
             }
         }
     }
 
-    private void Fire()
+    [PunRPC]
+    private void RPC_Fire()
     {
         var fireballInstance = Instantiate(fireball, (Vector2)fireTransform.position, fireTransform.rotation);
         fireballInstance.velocity = fireTransform.right * fireballSpeed;
-        InverseVelocity(fireballInstance);
+        RPC_InverseVelocity(fireballInstance);
+        RPC_FlipFireball();
 
         Destroy(fireballInstance.gameObject, fireballRange);
     }
 
-    private void InverseVelocity(Rigidbody2D instance)
+    private void RPC_InverseVelocity(Rigidbody2D instance)
     {
         if (playerTransform.localScale.x == -1)
         {
@@ -46,7 +49,7 @@ public class PlayerFireball : MonoBehaviour
         }
     }
 
-    private void FlipFireball()
+    private void RPC_FlipFireball()
     {
         fireballSprite.flipX = playerTransform.localScale.x == -1;
     }

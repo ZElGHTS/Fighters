@@ -21,6 +21,7 @@ public class CameraRig : MonoBehaviour
     private void Start()
     {
         players.Add(focus.gameObject);
+        players.Add(QuickInstantiate.Prefab);
     }
 
     private void LateUpdate()

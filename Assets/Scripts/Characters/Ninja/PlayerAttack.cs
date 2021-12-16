@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class PlayerAttack : MonoBehaviour
+public class PlayerAttack : MonoBehaviourPun
 {
     [SerializeField] private Transform playerTransform;
     [SerializeField] private LayerMask enemyLayers;
@@ -39,13 +40,16 @@ public class PlayerAttack : MonoBehaviour
         _playerRb = GetComponent<Rigidbody2D>();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
+        if (!photonView.IsMine) return;
+        if (Input.GetButton("Shield")) return;
+        
         if (Time.time >= _nextAttackTime)
         {
             if (Input.GetButtonDown("Attack"))
             {
-                Attack();
+                photonView.RPC("RPC_Attack", RpcTarget.AllViaServer);
                 _nextAttackTime = Time.time + 1f / _attackCooldown;
             }
         }
@@ -54,22 +58,23 @@ public class PlayerAttack : MonoBehaviour
         {
             if (Input.GetButtonDown("Strike"))
             {
-                StrikeAttack();
+                photonView.RPC("RPC_StrikeAttack", RpcTarget.AllViaServer);
                 _nextStrikeTime = Time.time + 1f / _strikeCooldown;
             }
         }
 
         if (Time.time >= _nextJpTime)
         {
-            if (Input.GetButtonDown("JumpAttack"))
+            if (Input.GetButtonDown("JumpAttack") || Input.GetAxis("Vertical") < 0)
             {
-                JumpAttack();
+                photonView.RPC("RPC_JumpAttack", RpcTarget.AllViaServer);
                 _nextJpTime = Time.time + 1f / _jumpAttackCooldown;
             }
         }
     }
 
-    private void Attack()
+    [PunRPC]
+    private void RPC_Attack()
     {
         IsDoingHisBest = true;
         _animator.SetTrigger(AttackAnimation);
@@ -78,7 +83,8 @@ public class PlayerAttack : MonoBehaviour
         ApplyDamage(attackCheck, attackRange, attackDamage);
     }
 
-    private void StrikeAttack()
+    [PunRPC]
+    private void RPC_StrikeAttack()
     {
         IsDoingHisBest = true;
         _animator.SetTrigger(StrikeAttackAnimation);
@@ -89,7 +95,8 @@ public class PlayerAttack : MonoBehaviour
         ApplyDamage(strikeCheck, strikeRange, strikeDamage);
     }
 
-    private void JumpAttack()
+    [PunRPC]
+    private void RPC_JumpAttack()
     {
         IsDoingHisBest = true;
         _animator.SetTrigger(JumpAttackAnimation);

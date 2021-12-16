@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class PlayerSaw : MonoBehaviour
+public class PlayerSaw : MonoBehaviourPun
 {
     [SerializeField] private Rigidbody2D sawRigidbody;
     [SerializeField] private SpriteRenderer sawSprite;
@@ -16,57 +17,58 @@ public class PlayerSaw : MonoBehaviour
 
     private BoxCollider2D _collider2D;
     private Rigidbody2D _sawInstance;
+    //private GameObject _sawInstance;
     private Rigidbody2D _verticalSawInstance;
+    //private GameObject _verticalSawInstance;
     
     private void Start()
     {
         _collider2D = GetComponent<BoxCollider2D>();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
+        if (!photonView.IsMine) return;
         if (Input.GetButton("Shield")) return;
         
-        FlipSaw();
-        if (Input.GetButton("Vertical") && Input.GetButtonUp("Fire1") && _sawInstance == null && _verticalSawInstance == null)
+        if ((Input.GetButton("Vertical") || Input.GetAxis("Vertical") < 0) && Input.GetButtonUp("Fire1") && _sawInstance == null && _verticalSawInstance == null)
         {
-            CreateVerticalSaw();
+            photonView.RPC("RPC_CreateVerticalSaw", RpcTarget.AllViaServer);
             return;
         }
         
         if (Input.GetButtonUp("Fire1") && _sawInstance == null && _verticalSawInstance == null)
         {
-            CreateSaw();
+            photonView.RPC("RPC_CreateSaw", RpcTarget.AllViaServer);
         }
     }
 
-    private void FlipSaw()
-    {
-        sawSprite.flipX = playerTransform.localScale.x == -1;
-    }
-    
-    private void CreateSaw()
+    [PunRPC]
+    private void RPC_CreateSaw()
     {
         _sawInstance = Instantiate(sawRigidbody, (Vector2)fireTransform.position, fireTransform.rotation);
-        AdjustVelocity();
+        RPC_AdjustVelocity();
+        RPC_FlipSaw();
 
         Destroy(_sawInstance.gameObject, range);
     }
 
-    private void CreateVerticalSaw()
+    [PunRPC]
+    private void RPC_CreateVerticalSaw()
     {
         _verticalSawInstance = Instantiate(sawRigidbody, (Vector2)fireTransform.position, fireTransform.rotation);
         _verticalSawInstance.velocity = fireTransform.up * movementSpeed;
+        RPC_FlipSaw();
         
         Destroy(_verticalSawInstance.gameObject, verticalRange);
     }
 
-    private void AdjustVelocity()
+    private void RPC_AdjustVelocity()
     {
         if (IsPlayerGrounded())
         {
             _sawInstance.velocity = fireTransform.right * movementSpeed;
-            InverseVelocity();
+            RPC_InverseVelocity();
         }
         else
         {
@@ -74,7 +76,12 @@ public class PlayerSaw : MonoBehaviour
         }
     }
     
-    private void InverseVelocity()
+    private void RPC_FlipSaw()
+    {
+        sawSprite.flipX = playerTransform.localScale.x == -1;
+    }
+    
+    private void RPC_InverseVelocity()
     {
         if (playerTransform.localScale.x == -1)
         {
